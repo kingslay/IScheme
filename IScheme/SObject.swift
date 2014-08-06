@@ -7,22 +7,50 @@
 //
 
 import Foundation
+var NULL = SObject()
+class SObject: NSObject,BooleanType,Printable{
+    override var description: String {
+       return self as String
+    }
 
-class SObject : NSObject,Printable{
-    override var description : String {
-    return ""
+    var boolValue: Bool {
+        return self == TRUE
+    }
+    
+    func __conversion() -> Int {
+        return (self as SNumber).value
+    }
+    
+    func __conversion() -> String {
+        return ""
+    }
+
+}
+
+class SException: SObject {
+    var message: String
+    init(message: String) {
+        self.message = message
+    }
+    override func __conversion() -> String {
+        return message
     }
 }
-class SNumber : SObject {
+class SNumber: SObject {
     var value : Int
-    override var description : String {
-    return "\(value)"
-    }
+    
     init(value : Int) {
         self.value = value
     }
-    func __conversion() -> Int {
-        return value
+    override func isEqual(object: AnyObject!) -> Bool {
+        if var number = object as? SNumber {
+            return value == number.value
+        }
+        return false
+    }
+    
+    override func __conversion() -> String {
+        return "\(value)"
     }
 }
 extension Int {
@@ -34,57 +62,69 @@ extension Int {
     }
 }
 
+var TRUE = SBool()
+var FALSE = SBool()
 
-class SBool : SObject, LogicValue {
-    class var false: SBool {
-    return SBool()
-    }
-    class var true: SBool {
-    return SBool()
-    }
-    init() {
+class SBool : SObject, BooleanType {
+    private override init() {
         
     }
     func __conversion() -> Bool {
-        return self == SBool.true
+        return self.boolValue
     }
-    func getLogicValue() -> Bool {
-        return self == SBool.true
-    }
-    override var description: String {
-    return self.__conversion().description
+    
+    override func __conversion() -> String {
+        return self.boolValue.description
     }
     
 }
 extension Bool {
     func __conversion() -> SBool {
-        return self ? SBool.true : SBool.false
+        return self ? TRUE : FALSE
     }
 }
 
-class SList : SObject, Sequence{
-    var values : Array<SObject>
+class SList : SObject, SequenceType{
+    var values : [SObject]
     
-    init(values: Array<SObject>) {
+    init(values: [SObject]) {
         self.values = values
     }
     
-func generate() -> IndexingGenerator<[SObject]> {
-        return self.values.generate()
-    }
-    override var description: String {
-    return "(list " + " ".join(self.values) + ")"
-    }
-}
-class SFunction : SObject {
-    var body : SExpression
-    var parameters : [String]
-    var scope : SScope
-    var isPartial : Bool {
-    var count = computeFilledParameters().count
-        return count > 0 && count < parameters.count
+    func generate() -> IndexingGenerator<[SObject]> {
+        return values.generate()
     }
     
+    func count() -> Int {
+        return values.count
+    }
+    
+    subscript (index: Int) -> SObject {
+        return values[index]
+    }
+    subscript (subRange: Range<Int>) -> SList {
+        return Array(values[subRange])
+    }
+    
+    func __conversion() -> Array<SObject> {
+        return values
+    }
+
+    override func __conversion() -> String {
+        return "(list " + " ".join(values.map{ $0 as String }) + ")"
+    }
+}
+extension Array {
+    func __conversion() -> SList {
+        return SList(values: (self.map{ $0 as SObject }))
+    }
+}
+
+
+class SFunction : SObject {
+    private(set) var body : SExpression
+    private(set) var parameters : [String]
+    private(set) var scope : SScope
     init(body : SExpression, parameters : [String], scope : SScope) {
         self.body = body
         self.parameters = parameters
@@ -103,15 +143,27 @@ class SFunction : SObject {
         return parameters.filter{ self.scope.findInTop( $0 ) != nil }
     }
     
-    override var description : String {
-    var tmp = " ".join( self.parameters.map { name -> String in
-        if let value = self.scope.findInTop(name) {
-            return "\(name):\(value)"
-        }else{
-            return name
+    func update(arguments: [SObject]) -> SFunction {
+        var newArguments = arguments
+        for parameter in parameters {
+            if let obj = scope.findInTop(parameter){
+                newArguments.append(obj)
+            }
         }
-        })
-        return "(func (\(tmp)) \(self.body)"
+        var newScope = scope.parent!.spawnScopeWith(parameters, values: newArguments)
+        return SFunction(body: body, parameters: parameters, scope: newScope)
+        
+    }
+    
+    override func __conversion() -> String {
+        var tmp = " ".join( self.parameters.map { name -> String in
+            if let value = self.scope.findInTop(name) {
+                return "\(name):\(value)"
+            }else{
+                return name
+            }
+            })
+        return "(func (\(tmp)) \(body))"
     }
     
 }
