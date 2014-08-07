@@ -13,7 +13,7 @@ SScope.buildIn("if") { args, scope in
     return condition ? args[1].evaluate(scope) : args[2].evaluate(scope)
 }
 SScope.buildIn("def") { args, scope in
-    scope.define(args[0].value, value: args[1].evaluate(SScope(parent: scope)))
+    scope.define(args[0].value, value: args[1].evaluate(SScope(scope)))
 }
 SScope.buildIn("begin") { args, scope in
     var result: SObject?
@@ -24,17 +24,17 @@ SScope.buildIn("begin") { args, scope in
 }
 SScope.buildIn("func") { args, scope in
     var parameters = args[0].children.map{ $0.value }
-    return SFunction(body: args[1], parameters: parameters, scope: SScope(parent: scope))
+    return SFunction(body: args[1], parameters: parameters, scope: SScope(scope))
  
 }
 SScope.buildIn("list") { args, scope in
-    return SList(values: args.map{ $0.evaluate(scope) })
+    return SList(args.map{ $0.evaluate(scope) })
 }
 
 
 SScope.buildIn("and") { args, scope in
     if args.count < 1 {
-        return SException(message: "Parameters count in or should be > 0 ")
+        return SException("Parameters count in or should be > 0 ")
     }
     for arg in args {
         if !arg.evaluate(scope) {
@@ -45,7 +45,7 @@ SScope.buildIn("and") { args, scope in
 }
 SScope.buildIn("or") { args, scope in
     if args.count < 1 {
-        return SException(message: "Parameters count in and should be > 0 ")
+        return SException("Parameters count in and should be > 0 ")
     }
     for arg in args {
         if arg.evaluate(scope) {
@@ -56,7 +56,7 @@ SScope.buildIn("or") { args, scope in
 }
 SScope.buildIn("not") { args, scope in
     if args.count != 1 {
-        return SException(message: "Parameters count in not should be 1 ")
+        return SException("Parameters count in not should be 1 ")
     }    
     return args[0].evaluate(scope)
 }
@@ -88,7 +88,7 @@ SScope.buildIn("/") { args, scope in
 SScope.buildIn("%") { args, scope in
     var numbers = args.map{ $0.evaluate(scope) }
     if numbers.count != 2 {
-        return SException(message: "Parameters count in mod should be 2")
+        return SException("Parameters count in mod should be 2")
     }
     return (numbers[0] as Int) % (numbers[1] as Int)
 }
@@ -129,10 +129,10 @@ SScope.buildIn("append") { args, scope in
             }
         }
     }
-    return SException(message: "Input must be two lists")
+    return SException("Input must be two lists")
 }
 var codes = ["1","(+ 1(* 2 3))","(and (= 1 0)(/ 1 0))","(or (= 0 0)(/ 1 0))","(def x 3)","(def square (func (x) (* x x)))","(square x)","y","(def alist(list 1 2 3))","(rest alist)","(def mul(func (a b)(* a b )))","(mul 3)","((mul 3) 4)","(def map (func (f alist)(if (empty? alist) alist (append (list (f (first alist)))(map f (rest alist))))))","(def alist(list 1 2 3 4 5 6))","(map (mul 3) alist)","(def reduce (func (init op alist)(if (empty? alist) init ( op (first alist )(reduce init op (rest alist))))))","(reduce 1 mul alist)"]
-//schemeTest(codes)
+schemeTest(codes)
 keepInterpretingInConsole()
 
 

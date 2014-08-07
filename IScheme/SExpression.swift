@@ -31,7 +31,7 @@ class SExpression: SObject {
         while true {
             if self.children.count == 0 {
                 if let number = self.value.toInt() {
-                    return SNumber(value: number);
+                    return SNumber(number);
                 } else {
                     return scope.find(current.value)
                 }
@@ -58,7 +58,7 @@ class SScope : NSObject {
     var builtinFunctions: Dictionary<String,FunctionType> {
         return overallbuiltinFunctions
     }
-    init(parent : SScope!) {
+    init(_ parent : SScope!) {
         self.parent = parent
     }
     func find(name: String) -> SObject {
@@ -70,7 +70,7 @@ class SScope : NSObject {
                 curren = curren.parent
             }
         }
-        return SException(message: name + " is not defined.")
+        return SException(name + " is not defined.")
     }
     
     func define(name: String, value: SObject) -> SObject {
@@ -90,7 +90,7 @@ class SScope : NSObject {
         if name.count < values.count {
             println("Too many arguments.")
         }
-        var scope = SScope(parent: self)
+        var scope = SScope(self)
         for i in 0 ..< values.count {
             scope.variableMap[name[i]] = values[i]
         }

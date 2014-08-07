@@ -8,11 +8,11 @@
 
 import Foundation
 var NULL = SObject()
-class SObject: NSObject,BooleanType,Printable{
+class SObject: NSObject, BooleanType, Printable{
     override var description: String {
        return self as String
     }
-
+    
     var boolValue: Bool {
         return self == TRUE
     }
@@ -29,7 +29,7 @@ class SObject: NSObject,BooleanType,Printable{
 
 class SException: SObject {
     var message: String
-    init(message: String) {
+    init(_ message: String) {
         self.message = message
     }
     override func __conversion() -> String {
@@ -39,7 +39,7 @@ class SException: SObject {
 class SNumber: SObject {
     var value : Int
     
-    init(value : Int) {
+    init(_ value : Int) {
         self.value = value
     }
     override func isEqual(object: AnyObject!) -> Bool {
@@ -55,10 +55,10 @@ class SNumber: SObject {
 }
 extension Int {
     func __conversion() -> SNumber {
-        return SNumber(value: self)
+        return SNumber(self)
     }
     func __conversion() -> SObject {
-        return SNumber(value: self)
+        return SNumber(self)
     }
 }
 
@@ -87,7 +87,7 @@ extension Bool {
 class SList : SObject, SequenceType{
     var values : [SObject]
     
-    init(values: [SObject]) {
+    init(_ values: [SObject]) {
         self.values = values
     }
     
@@ -116,7 +116,7 @@ class SList : SObject, SequenceType{
 }
 extension Array {
     func __conversion() -> SList {
-        return SList(values: (self.map{ $0 as SObject }))
+        return SList((self.map{ $0 as SObject }))
     }
 }
 
@@ -143,14 +143,13 @@ class SFunction : SObject {
         return parameters.filter{ self.scope.findInTop( $0 ) != nil }
     }
     
-    func update(arguments: [SObject]) -> SFunction {
-        var newArguments = arguments
+    func update(var arguments: [SObject]) -> SFunction {
         for parameter in parameters {
             if let obj = scope.findInTop(parameter){
-                newArguments.append(obj)
+                arguments.append(obj)
             }
         }
-        var newScope = scope.parent!.spawnScopeWith(parameters, values: newArguments)
+        var newScope = scope.parent!.spawnScopeWith(parameters, values: arguments)
         return SFunction(body: body, parameters: parameters, scope: newScope)
         
     }

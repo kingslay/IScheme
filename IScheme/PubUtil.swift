@@ -39,7 +39,7 @@ func parseAsIScheme(code : String) -> SExpression! {
 }
 func chainRelation(expressions: [SExpression], scope: SScope,relation:(number1: SNumber, number2: SNumber)-> Bool) -> SObject {
     if expressions.count < 2 {
-        return SException(message: "Must have more than 1 parameter in relation operation.")
+        return SException("Must have more than 1 parameter in relation operation.")
     }
     var current = expressions[0].evaluate(scope) as SNumber
     for expression in expressions[1 ..< expressions.count] {
@@ -60,10 +60,10 @@ func retrieveSList(expressions: [SExpression], scope: SScope, operationName: Str
             return list
         }
     }
-    return SException(message: "<" + operationName + "> must apply to a list")
+    return SException("<" + operationName + "> must apply to a list")
 }
 func keepInterpretingInConsole() {
-    var scope = SScope(parent: nil)
+    var scope = SScope(nil)
     println("welcome to IScheme")
     while(true){
         print(">>")
@@ -86,7 +86,7 @@ func readLine() -> String {
 }
 
 func schemeTest(codes: [String]) {
-    var scope = SScope(parent: nil)
+    var scope = SScope(nil)
     for code in codes {
         println(">>"+code)
         if code == "exit" {
