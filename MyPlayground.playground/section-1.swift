@@ -1,8 +1,7 @@
-// Playground - noun: a place where people can play
+import UIKit
 
-import Cocoa
-
-var a = "exit"
-a == "exit"
-
-
+var a = 1
+for i in 0...12 {
+    var b = (i>0) && (a>1)
+    println(b)
+}

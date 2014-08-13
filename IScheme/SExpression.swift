@@ -38,9 +38,8 @@ class SExpression: SObject {
             }else{
                 var first = self.children[0]
                 var expressions = Array(self.children[1 ..< self.children.count])
-                if var function: FunctionType = scope.builtinFunctions[first.value] {
-                    var result = function(expressions,scope)
-                    return result
+                if var function = scope.builtinFunctions[first.value] {
+                    return function(expressions,scope)
                 } else {
                     var function = first.value == "(" ? first.evaluate(scope) : scope.find(first.value)
                     var arguments = expressions.map{ $0.evaluate(scope) }

@@ -43,7 +43,7 @@ class SNumber: SObject {
         self.value = value
     }
     override func isEqual(object: AnyObject!) -> Bool {
-        if var number = object as? SNumber {
+        if let number = object as? SNumber {
             return value == number.value
         }
         return false
@@ -116,7 +116,7 @@ class SList : SObject, SequenceType{
 }
 extension Array {
     func __conversion() -> SList {
-        return SList((self.map{ $0 as SObject }))
+        return SList(self.map{ $0 as SObject })
     }
 }
 
@@ -135,7 +135,7 @@ class SFunction : SObject {
         if computeFilledParameters().count < parameters.count {
             return self
         }else{
-            return self.body.evaluate(self.scope)
+            return body.evaluate(scope)
         }
     }
     
@@ -155,7 +155,7 @@ class SFunction : SObject {
     }
     
     override func __conversion() -> String {
-        var tmp = " ".join( self.parameters.map { name -> String in
+        var tmp = " ".join( parameters.map { name -> String in
             if let value = self.scope.findInTop(name) {
                 return "\(name):\(value)"
             }else{
@@ -166,10 +166,3 @@ class SFunction : SObject {
     }
     
 }
-
-
-
-
-
-
-
