@@ -1,7 +1,8 @@
 import UIKit
-
-var a = 1
-for i in 0...12 {
-    var b = (i>0) && (a>1)
-    println(b)
+//字符串与字节转换
+let s = "12345678"
+var bytes = [Byte]()
+for char in s.utf8{
+    bytes.append(char ^ 88)
 }
+NSString(bytes: bytes, length: bytes.count, encoding: NSASCIIStringEncoding)
