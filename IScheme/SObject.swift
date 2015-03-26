@@ -9,22 +9,19 @@
 import Foundation
 var NULL = SObject()
 class SObject: NSObject, BooleanType, Printable{
-    override var description: String {
-       return self as String
-    }
-    
     var boolValue: Bool {
         return self == TRUE
     }
     
-    func __conversion() -> Int {
-        return (self as SNumber).value
-    }
-    
-    func __conversion() -> String {
+    override var description: String {
         return ""
     }
-
+    func toInt() -> Int {
+        if let number = self as? SNumber {
+            return number.value
+        }
+        return 0;
+    }
 }
 
 class SException: SObject {
@@ -32,14 +29,15 @@ class SException: SObject {
     init(_ message: String) {
         self.message = message
     }
-    override func __conversion() -> String {
+
+    override var description: String {
         return message
     }
 }
-class SNumber: SObject {
+class SNumber: SObject,IntegerLiteralConvertible{
     var value : Int
     
-    init(_ value : Int) {
+    required init(integerLiteral value : Int) {
         self.value = value
     }
     override func isEqual(object: AnyObject!) -> Bool {
@@ -49,46 +47,39 @@ class SNumber: SObject {
         return false
     }
     
-    override func __conversion() -> String {
+    override var description: String {
         return "\(value)"
     }
 }
-extension Int {
-    func __conversion() -> SNumber {
-        return SNumber(self)
-    }
-    func __conversion() -> SObject {
-        return SNumber(self)
-    }
-}
 
-var TRUE = SBool()
-var FALSE = SBool()
-
-class SBool : SObject, BooleanType {
-    private override init() {
-        
-    }
-    func __conversion() -> Bool {
-        return self.boolValue
+class SBool : SObject,BooleanLiteralConvertible{
+    required init(booleanLiteral value: BooleanLiteralType){
+        value ? TRUE:FALSE
     }
     
-    override func __conversion() -> String {
+    override var description: String {
         return self.boolValue.description
     }
-    
-}
-extension Bool {
-    func __conversion() -> SBool {
-        return self ? TRUE : FALSE
-    }
+       
 }
 
-class SList : SObject, SequenceType{
-    var values : [SObject]
+
+class SList : SObject, SequenceType, ArrayLiteralConvertible{
+    typealias Element = SObject
+
+    var values : Array<SObject>
     
-    init(_ values: [SObject]) {
+    required init(_ values: [SObject]) {
         self.values = values
+    }
+   
+
+    required init(array: Array<SObject>) {
+        self.values = array
+    }
+    
+    required init(arrayLiteral elements: Element...){
+        self.values = elements
     }
     
     func generate() -> IndexingGenerator<[SObject]> {
@@ -102,22 +93,25 @@ class SList : SObject, SequenceType{
     subscript (index: Int) -> SObject {
         return values[index]
     }
+    
     subscript (subRange: Range<Int>) -> SList {
-        return Array(values[subRange])
+        return SList(array: Array(values[subRange]))
     }
     
-    func __conversion() -> Array<SObject> {
-        return values
-    }
 
-    override func __conversion() -> String {
-        return "(list " + " ".join(values.map{ $0 as String }) + ")"
+    override var description: String {
+        return "(list " + " ".join(values.map{ $0.description }) + ")"
     }
 }
-extension Array {
-    func __conversion() -> SList {
-        return SList(self.map{ $0 as SObject })
-    }
+
+func + (left: SList, right: SList) -> SList {
+    var values = left.values + right.values
+    return SList(values)
+}
+
+func + (left: SNumber, right: SNumber) -> SNumber {
+    var value = left.value + right.value
+    return SNumber(integerLiteral: value)
 }
 
 
@@ -154,7 +148,7 @@ class SFunction : SObject {
         
     }
     
-    override func __conversion() -> String {
+    override var description: String {
         var tmp = " ".join( parameters.map { name -> String in
             if let value = self.scope.findInTop(name) {
                 return "\(name):\(value)"

@@ -7,6 +7,8 @@
 //
 
 import Foundation
+var TRUE : SBool = true
+var FALSE : SBool = false
 
 SScope.buildIn("if") { args, scope in
     var condition = args[0].evaluate(scope)
@@ -38,21 +40,22 @@ SScope.buildIn("and") { args, scope in
     }
     for arg in args {
         if !arg.evaluate(scope) {
-           return false
+           return FALSE
         }
     }
-    return true
+    return TRUE
 }
 SScope.buildIn("or") { args, scope in
     if args.count < 1 {
         return SException("Parameters count in and should be > 0 ")
     }
     for arg in args {
+        
         if arg.evaluate(scope) {
-            return true
+            return TRUE
         }
     }
-    return false
+    return FALSE
 }
 SScope.buildIn("not") { args, scope in
     if args.count != 1 {
@@ -64,33 +67,33 @@ SScope.buildIn("not") { args, scope in
 
 
 SScope.buildIn("+") { args, scope in
-    var numbers = args.map{ $0.evaluate(scope) }
-    return numbers.reduce(0){ $0 + $1 }
+    var numbers = args.map{ $0.evaluate(scope).toInt() }
+    return SNumber(integerLiteral: numbers.reduce(0){ $0 + $1 })
 }
 SScope.buildIn("-") { args, scope in
-    var numbers = args.map{ $0.evaluate(scope) }
-    var first = numbers.removeAtIndex(0) as Int
+    var numbers = args.map{ $0.evaluate(scope).toInt() }
+    var first = numbers.removeAtIndex(0)
     if numbers.count == 0 {
-        return -first
+        return SNumber(integerLiteral: 0 - first)
     } else{
-        return numbers.reduce(first){ $0 - $1 }
+        return SNumber(integerLiteral: numbers.reduce(first){ $0 - $1 })
     }
 }
 SScope.buildIn("*") { args, scope in
-    var numbers = args.map{ $0.evaluate(scope) }
-    return numbers.reduce(1){ $0 * $1 }
+    var numbers = args.map{ $0.evaluate(scope).toInt() }
+    return SNumber(integerLiteral: numbers.reduce(1){ $0 * $1 })
 }
 SScope.buildIn("/") { args, scope in
-    var numbers = args.map{ $0.evaluate(scope) }
-    var first = numbers.removeAtIndex(0) as Int
-    return numbers.reduce(first){ $0 / $1 }
+    var numbers = args.map{ $0.evaluate(scope).toInt() }
+    var first = numbers.removeAtIndex(0)
+    return SNumber(integerLiteral: numbers.reduce(first){ $0 / $1 })
 }
 SScope.buildIn("%") { args, scope in
-    var numbers = args.map{ $0.evaluate(scope) }
+    var numbers = args.map{ $0.evaluate(scope).toInt()}
     if numbers.count != 2 {
         return SException("Parameters count in mod should be 2")
     }
-    return (numbers[0] as Int) % (numbers[1] as Int)
+    return SNumber(integerLiteral: numbers[0] % numbers[1])
 }
 SScope.buildIn("=") { chainRelation($0,$1){ $0 == $1 }}
 SScope.buildIn("<") { chainRelation($0,$1){ $0 == $1 }}
@@ -115,7 +118,7 @@ SScope.buildIn("rest") {
 SScope.buildIn("empty?") {
     var obj = retrieveSList($0,$1,"empty?")
     if var list = obj as? SList {
-        return list.count() == 0
+        return list.count() == 0 ? TRUE : FALSE
     }
     return obj
 }
@@ -125,7 +128,7 @@ SScope.buildIn("append") { args, scope in
         let obj2 = args[1].evaluate(scope)
         if var list1 = obj1 as? SList {
             if var list2 = obj2 as? SList  {
-                return list1 as Array + list2
+                return list1 + list2
             }
         }
     }

@@ -11,9 +11,9 @@ class SExpression: SObject {
     private(set) var value: String
     var children = [SExpression]()
     private(set) var parent: SExpression?
-    override func __conversion() -> String {
+    override var description: String {
         if value == "(" {
-            return "(" +  " ".join(children.map{ $0 as String }) + ")"
+            return "(" +  " ".join(children.map{ $0.description }) + ")"
         } else {
             return value
         }
@@ -31,7 +31,7 @@ class SExpression: SObject {
         while true {
             if self.children.count == 0 {
                 if let number = self.value.toInt() {
-                    return SNumber(number);
+                    return SNumber(integerLiteral: number);
                 } else {
                     return scope.find(current.value)
                 }
@@ -43,7 +43,7 @@ class SExpression: SObject {
                 } else {
                     var function = first.value == "(" ? first.evaluate(scope) : scope.find(first.value)
                     var arguments = expressions.map{ $0.evaluate(scope) }
-                    var newFunction = (function as SFunction).update(arguments)
+                    var newFunction = (function as! SFunction).update(arguments)
                     return newFunction.evaluate()
                 }
             }
@@ -61,12 +61,12 @@ class SScope : NSObject {
         self.parent = parent
     }
     func find(name: String) -> SObject {
-        var curren: SScope! = self
-        while curren {
-            if let sobject = curren.variableMap[name] {
+        var curren: SScope? = self
+        while (curren != nil) {
+            if let sobject = curren!.variableMap[name] {
                 return sobject
             }else{
-                curren = curren.parent
+                curren = curren!.parent
             }
         }
         return SException(name + " is not defined.")

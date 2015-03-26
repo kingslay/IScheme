@@ -4,6 +4,10 @@ IScheme
 
 用SWIFT实现一个简化Scheme——iScheme及其解释器。
 
+Requirements
+
+iOS 7.x / 8.x, Swift 1.2
+
 演示
 
 一、基本的运算
