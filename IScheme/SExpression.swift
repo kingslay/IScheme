@@ -30,20 +30,20 @@ class SExpression: SObject {
     func evaluate(current: SExpression, scope: SScope) -> SObject {
         while true {
             if self.children.count == 0 {
-                if let number = self.value.toInt() {
+                if let number = Int(self.value) {
                     return SNumber(integerLiteral: number);
                 } else {
                     return scope.find(current.value)
                 }
             }else{
-                var first = self.children[0]
-                var expressions = Array(self.children[1 ..< self.children.count])
-                if var function = scope.builtinFunctions[first.value] {
+                let first = self.children[0]
+                let expressions = Array(self.children[1 ..< self.children.count])
+                if let function = scope.builtinFunctions[first.value] {
                     return function(expressions,scope)
                 } else {
-                    var function = first.value == "(" ? first.evaluate(scope) : scope.find(first.value)
-                    var arguments = expressions.map{ $0.evaluate(scope) }
-                    var newFunction = (function as! SFunction).update(arguments)
+                    let function = first.value == "(" ? first.evaluate(scope) : scope.find(first.value)
+                    let arguments = expressions.map{ $0.evaluate(scope) }
+                    let newFunction = (function as! SFunction).update(arguments)
                     return newFunction.evaluate()
                 }
             }
@@ -87,9 +87,9 @@ class SScope : NSObject {
     
     func spawnScopeWith(name : [String], values : [SObject]) -> SScope {
         if name.count < values.count {
-            println("Too many arguments.")
+            print("Too many arguments.")
         }
-        var scope = SScope(self)
+        let scope = SScope(self)
         for i in 0 ..< values.count {
             scope.variableMap[name[i]] = values[i]
         }

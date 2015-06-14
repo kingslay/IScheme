@@ -7,7 +7,7 @@ IScheme
 
 Requirements
 
-iOS 7.x / 8.x, Swift 1.2
+iOS 7.x / 8.x, Swift 2.0
 
 演示
 

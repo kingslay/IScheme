@@ -95,28 +95,28 @@ SScope.buildIn("%") { args, scope in
     }
     return SNumber(integerLiteral: numbers[0] % numbers[1])
 }
-SScope.buildIn("=") { chainRelation($0,$1){ $0 == $1 }}
-SScope.buildIn("<") { chainRelation($0,$1){ $0 == $1 }}
-SScope.buildIn("<=") { chainRelation($0,$1){ $0 == $1 }}
-SScope.buildIn(">") { chainRelation($0,$1){ $0 == $1 }}
-SScope.buildIn(">=") { chainRelation($0,$1){ $0 == $1 }}
-SScope.buildIn("!=") { chainRelation($0,$1){ $0 == $1 }}
+SScope.buildIn("=") { chainRelation($0,scope: $1){ $0 == $1 }}
+SScope.buildIn("<") { chainRelation($0,scope: $1){ $0 == $1 }}
+SScope.buildIn("<=") { chainRelation($0,scope: $1){ $0 == $1 }}
+SScope.buildIn(">") { chainRelation($0,scope: $1){ $0 == $1 }}
+SScope.buildIn(">=") { chainRelation($0,scope: $1){ $0 == $1 }}
+SScope.buildIn("!=") { chainRelation($0,scope: $1){ $0 == $1 }}
 SScope.buildIn("first") {
-    var obj = retrieveSList($0,$1,"first")
+    var obj = retrieveSList($0,scope: $1,operationName: "first")
     if var list = obj as? SList {
         return list[0]
     }
     return obj
 }
 SScope.buildIn("rest") {
-    var obj = retrieveSList($0,$1,"rest")
+    var obj = retrieveSList($0,scope: $1,operationName: "rest")
     if var list = obj as? SList {
         return list[1..<list.count()]
     }
     return obj
 }
 SScope.buildIn("empty?") {
-    var obj = retrieveSList($0,$1,"empty?")
+    var obj = retrieveSList($0,scope: $1,operationName: "empty?")
     if var list = obj as? SList {
         return list.count() == 0 ? TRUE : FALSE
     }

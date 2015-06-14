@@ -8,7 +8,7 @@
 
 import Foundation
 var NULL = SObject()
-class SObject: NSObject, BooleanType, Printable{
+class SObject: NSObject, BooleanType{
     var boolValue: Bool {
         return self == TRUE
     }
@@ -105,12 +105,12 @@ class SList : SObject, SequenceType, ArrayLiteralConvertible{
 }
 
 func + (left: SList, right: SList) -> SList {
-    var values = left.values + right.values
+    let values = left.values + right.values
     return SList(values)
 }
 
 func + (left: SNumber, right: SNumber) -> SNumber {
-    var value = left.value + right.value
+    let value = left.value + right.value
     return SNumber(integerLiteral: value)
 }
 
@@ -143,13 +143,13 @@ class SFunction : SObject {
                 arguments.append(obj)
             }
         }
-        var newScope = scope.parent!.spawnScopeWith(parameters, values: arguments)
+        let newScope = scope.parent!.spawnScopeWith(parameters, values: arguments)
         return SFunction(body: body, parameters: parameters, scope: newScope)
         
     }
     
     override var description: String {
-        var tmp = " ".join( parameters.map { name -> String in
+        let tmp = " ".join( parameters.map { name -> String in
             if let value = self.scope.findInTop(name) {
                 return "\(name):\(value)"
             }else{

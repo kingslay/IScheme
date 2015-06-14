@@ -15,14 +15,14 @@ func tokenize(text :String) -> [String]{
 }
 func prettyPrint(sentence:String) -> String{
     let elements = tokenize(sentence).map{ "'\($0)'" }
-    return "[" + join(", ",elements) + "]"
+    return "[" + ", ".join(elements) + "]"
 }
 func parseAsIScheme(code : String) -> SExpression! {
-    var program = SExpression(value: "", parent: nil)
+    let program = SExpression(value: "", parent: nil)
     var current = program
     for lex in tokenize(code) {
         if lex == "(" {
-            var newNode = SExpression(value: "(", parent: current)
+            let newNode = SExpression(value: "(", parent: current)
             current.children.append(newNode)
             current = newNode
         }else if lex == ")" {
@@ -43,7 +43,7 @@ func chainRelation(expressions: [SExpression], scope: SScope,relation:(number1: 
     }
     var current = expressions[0].evaluate(scope) as! SNumber
     for expression in expressions[1 ..< expressions.count] {
-        var next = expression.evaluate(scope)as! SNumber
+        let next = expression.evaluate(scope)as! SNumber
         if relation(number1: current, number2: next) {
             current = next
         } else {
@@ -63,39 +63,42 @@ func retrieveSList(expressions: [SExpression], scope: SScope, operationName: Str
     return SException("<" + operationName + "> must apply to a list")
 }
 func keepInterpretingInConsole() {
-    var scope = SScope(nil)
-    println("welcome to IScheme")
+    let scope = SScope(nil)
+    print("welcome to IScheme")
     while(true){
-        print(">>")
-        var code = readLine()
-        if code == "exit\n" {
-            break
-        } else if code.isEmpty  {
-            continue
-        } else {
-            if var expression = parseAsIScheme(code) {
-                println(expression.evaluate(scope));
+        print(">>", appendNewline: false)
+        if let code = readLine(stripNewline: false) {
+            if code == "exit\n" {
+                break
+            } else if code.isEmpty  {
+                continue
+            } else {
+                if let expression = parseAsIScheme(code) {
+                    print(expression.evaluate(scope));
+                }
             }
+
         }
     }
 }
+
 func readLine() -> String {
-    var keyboard = NSFileHandle.fileHandleWithStandardInput()
-    var inputData = keyboard.availableData
+    let keyboard = NSFileHandle.fileHandleWithStandardInput()
+    let inputData = keyboard.availableData
     return NSString(data: inputData, encoding:NSUTF8StringEncoding) as! String
 }
 
 func schemeTest(codes: [String]) {
-    var scope = SScope(nil)
+    let scope = SScope(nil)
     for code in codes {
-        println(">>"+code)
+        print(">>"+code)
         if code == "exit" {
             break
         } else if code.isEmpty  {
             continue
         } else {
-            if var expression = parseAsIScheme(code) {
-                println(expression.evaluate(scope).description);
+            if let expression = parseAsIScheme(code) {
+                print(expression.evaluate(scope).description);
             }
         }
     }
