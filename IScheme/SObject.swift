@@ -100,7 +100,7 @@ class SList : SObject, SequenceType, ArrayLiteralConvertible{
     
 
     override var description: String {
-        return "(list " + " ".join(values.map{ $0.description }) + ")"
+        return "(list " + values.map{ $0.description }.joinWithSeparator(" ") + ")"
     }
 }
 
@@ -149,13 +149,13 @@ class SFunction : SObject {
     }
     
     override var description: String {
-        let tmp = " ".join( parameters.map { name -> String in
+        let tmp = parameters.map { name -> String in
             if let value = self.scope.findInTop(name) {
                 return "\(name):\(value)"
             }else{
                 return name
             }
-            })
+            }.joinWithSeparator(" ")
         return "(func (\(tmp)) \(body))"
     }
     

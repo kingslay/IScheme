@@ -15,7 +15,7 @@ func tokenize(text :String) -> [String]{
 }
 func prettyPrint(sentence:String) -> String{
     let elements = tokenize(sentence).map{ "'\($0)'" }
-    return "[" + ", ".join(elements) + "]"
+    return "[" + elements.joinWithSeparator(", ") + "]"
 }
 func parseAsIScheme(code : String) -> SExpression! {
     let program = SExpression(value: "", parent: nil)
@@ -66,7 +66,7 @@ func keepInterpretingInConsole() {
     let scope = SScope(nil)
     print("welcome to IScheme")
     while(true){
-        print(">>", appendNewline: false)
+        print(">>",terminator:"")
         if let code = readLine(stripNewline: false) {
             if code == "exit\n" {
                 break

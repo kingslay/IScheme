@@ -13,7 +13,7 @@ class SExpression: SObject {
     private(set) var parent: SExpression?
     override var description: String {
         if value == "(" {
-            return "(" +  " ".join(children.map{ $0.description }) + ")"
+            return "(" +  children.map{ $0.description }.joinWithSeparator(" ") + ")"
         } else {
             return value
         }
