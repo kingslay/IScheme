@@ -32,7 +32,6 @@
 		CB9264D5199137AF002ADE99 /* PubUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubUtil.swift; sourceTree = "<group>"; };
 		CB9264D6199137AF002ADE99 /* SExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SExpression.swift; sourceTree = "<group>"; };
 		CB9264D7199137AF002ADE99 /* SObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SObject.swift; sourceTree = "<group>"; };
-		CB9264DB199137D1002ADE99 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		CBF06CAD199200DD009DB2B0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -51,7 +50,6 @@
 			isa = PBXGroup;
 			children = (
 				CBF06CAD199200DD009DB2B0 /* README.md */,
-				CB9264DB199137D1002ADE99 /* MyPlayground.playground */,
 				3CA8A06C197968BF006487F2 /* IScheme */,
 				3CA8A06B197968BF006487F2 /* Products */,
 			);
