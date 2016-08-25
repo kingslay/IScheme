@@ -8,7 +8,7 @@
 
 import Foundation
 var NULL = SObject()
-class SObject: NSObject, BooleanType{
+class SObject: NSObject, Boolean{
     var boolValue: Bool {
         return self == TRUE
     }
@@ -40,7 +40,7 @@ class SNumber: SObject,IntegerLiteralConvertible{
     required init(integerLiteral value : Int) {
         self.value = value
     }
-    override func isEqual(object: AnyObject!) -> Bool {
+    override func isEqual(_ object: AnyObject!) -> Bool {
         if let number = object as? SNumber {
             return value == number.value
         }
@@ -64,7 +64,7 @@ class SBool : SObject,BooleanLiteralConvertible{
 }
 
 
-class SList : SObject, SequenceType, ArrayLiteralConvertible{
+class SList : SObject, Sequence, ArrayLiteralConvertible{
     typealias Element = SObject
 
     var values : Array<SObject>
@@ -82,8 +82,8 @@ class SList : SObject, SequenceType, ArrayLiteralConvertible{
         self.values = elements
     }
     
-    func generate() -> IndexingGenerator<[SObject]> {
-        return values.generate()
+    func makeIterator() -> IndexingIterator<[SObject]> {
+        return values.makeIterator()
     }
     
     func count() -> Int {
@@ -100,7 +100,7 @@ class SList : SObject, SequenceType, ArrayLiteralConvertible{
     
 
     override var description: String {
-        return "(list " + values.map{ $0.description }.joinWithSeparator(" ") + ")"
+        return "(list " + values.map{ $0.description }.joined(separator: " ") + ")"
     }
 }
 
@@ -137,7 +137,8 @@ class SFunction : SObject {
         return parameters.filter{ self.scope.findInTop( $0 ) != nil }
     }
     
-    func update(var arguments: [SObject]) -> SFunction {
+    func update(_ arguments: [SObject]) -> SFunction {
+        var arguments = arguments
         for parameter in parameters {
             if let obj = scope.findInTop(parameter){
                 arguments.append(obj)
@@ -155,7 +156,7 @@ class SFunction : SObject {
             }else{
                 return name
             }
-            }.joinWithSeparator(" ")
+            }.joined(separator: " ")
         return "(func (\(tmp)) \(body))"
     }
     

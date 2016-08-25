@@ -8,16 +8,16 @@
 
 import Foundation
 
-func tokenize(text :String) -> [String]{
-    return text.stringByReplacingOccurrencesOfString("(", withString: " ( ")
-        .stringByReplacingOccurrencesOfString(")",withString:" ) ")
-        .componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter{ $0 != "" }
+func tokenize(_ text :String) -> [String]{
+    return text.replacingOccurrences(of: "(", with: " ( ")
+        .replacingOccurrences(of: ")",with:" ) ")
+        .components(separatedBy: CharacterSet.whitespacesAndNewlines).filter{ $0 != "" }
 }
-func prettyPrint(sentence:String) -> String{
+func prettyPrint(_ sentence:String) -> String{
     let elements = tokenize(sentence).map{ "'\($0)'" }
-    return "[" + elements.joinWithSeparator(", ") + "]"
+    return "[" + elements.joined(separator: ", ") + "]"
 }
-func parseAsIScheme(code : String) -> SExpression! {
+func parseAsIScheme(_ code : String) -> SExpression! {
     let program = SExpression(value: "", parent: nil)
     var current = program
     for lex in tokenize(code) {
@@ -37,7 +37,7 @@ func parseAsIScheme(code : String) -> SExpression! {
         return nil
     }
 }
-func chainRelation(expressions: [SExpression], scope: SScope,relation:(number1: SNumber, number2: SNumber)-> Bool) -> SObject {
+func chainRelation(_ expressions: [SExpression], scope: SScope,relation:(number1: SNumber, number2: SNumber)-> Bool) -> SObject {
     if expressions.count < 2 {
         return SException("Must have more than 1 parameter in relation operation.")
     }
@@ -53,7 +53,7 @@ func chainRelation(expressions: [SExpression], scope: SScope,relation:(number1: 
     return TRUE
 }
 
-func retrieveSList(expressions: [SExpression], scope: SScope, operationName: String) -> SObject {
+func retrieveSList(_ expressions: [SExpression], scope: SScope, operationName: String) -> SObject {
     if expressions.count == 1 {
         let list = expressions[0].evaluate(scope)
         if list is SList  {
@@ -67,7 +67,7 @@ func keepInterpretingInConsole() {
     print("welcome to IScheme")
     while(true){
         print(">>",terminator:"")
-        if let code = readLine(stripNewline: false) {
+        if let code = readLine(strippingNewline: false) {
             if code == "exit\n" {
                 break
             } else if code.isEmpty  {
@@ -83,12 +83,12 @@ func keepInterpretingInConsole() {
 }
 
 func readLine() -> String {
-    let keyboard = NSFileHandle.fileHandleWithStandardInput()
+    let keyboard = FileHandle.withStandardInput
     let inputData = keyboard.availableData
-    return NSString(data: inputData, encoding:NSUTF8StringEncoding) as! String
+    return NSString(data: inputData, encoding:String.Encoding.utf8.rawValue) as! String
 }
 
-func schemeTest(codes: [String]) {
+func schemeTest(_ codes: [String]) {
     let scope = SScope(nil)
     for code in codes {
         print(">>"+code)

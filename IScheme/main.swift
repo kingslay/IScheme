@@ -72,7 +72,7 @@ SScope.buildIn("+") { args, scope in
 }
 SScope.buildIn("-") { args, scope in
     var numbers = args.map{ $0.evaluate(scope).toInt() }
-    var first = numbers.removeAtIndex(0)
+    var first = numbers.remove(at: 0)
     if numbers.count == 0 {
         return SNumber(integerLiteral: 0 - first)
     } else{
@@ -85,7 +85,7 @@ SScope.buildIn("*") { args, scope in
 }
 SScope.buildIn("/") { args, scope in
     var numbers = args.map{ $0.evaluate(scope).toInt() }
-    var first = numbers.removeAtIndex(0)
+    var first = numbers.remove(at: 0)
     return SNumber(integerLiteral: numbers.reduce(first){ $0 / $1 })
 }
 SScope.buildIn("%") { args, scope in

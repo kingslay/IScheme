@@ -13,7 +13,7 @@ class SExpression: SObject {
     private(set) var parent: SExpression?
     override var description: String {
         if value == "(" {
-            return "(" +  children.map{ $0.description }.joinWithSeparator(" ") + ")"
+            return "(" +  children.map{ $0.description }.joined(separator: " ") + ")"
         } else {
             return value
         }
@@ -23,11 +23,11 @@ class SExpression: SObject {
         self.value = value
         self.parent = parent
     }
-    func evaluate(scope: SScope) -> SObject {
+    func evaluate(_ scope: SScope) -> SObject {
         return evaluate(self, scope: scope)
     }
     
-    func evaluate(current: SExpression, scope: SScope) -> SObject {
+    func evaluate(_ current: SExpression, scope: SScope) -> SObject {
         while true {
             if self.children.count == 0 {
                 if let number = Int(self.value) {
@@ -60,7 +60,7 @@ class SScope : NSObject {
     init(_ parent : SScope!) {
         self.parent = parent
     }
-    func find(name: String) -> SObject {
+    func find(_ name: String) -> SObject {
         var curren: SScope? = self
         while (curren != nil) {
             if let sobject = curren!.variableMap[name] {
@@ -72,12 +72,12 @@ class SScope : NSObject {
         return SException(name + " is not defined.")
     }
     
-    func define(name: String, value: SObject) -> SObject {
+    func define(_ name: String, value: SObject) -> SObject {
         variableMap[name] = value
         return value
     }
     
-    func findInTop(name : String) -> SObject? {
+    func findInTop(_ name : String) -> SObject? {
         if let sobject = variableMap[name] {
             return sobject
         }else{
@@ -85,7 +85,7 @@ class SScope : NSObject {
         }
     }
     
-    func spawnScopeWith(name : [String], values : [SObject]) -> SScope {
+    func spawnScopeWith(_ name : [String], values : [SObject]) -> SScope {
         if name.count < values.count {
             print("Too many arguments.")
         }
@@ -96,7 +96,7 @@ class SScope : NSObject {
         return scope
     }
     
-    class func buildIn(name: String, builtinFunction: FunctionType) {
+    class func buildIn(_ name: String, builtinFunction: FunctionType) {
         overallbuiltinFunctions[name] = builtinFunction;
     }
     
